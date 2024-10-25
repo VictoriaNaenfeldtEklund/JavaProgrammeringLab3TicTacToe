@@ -5,112 +5,61 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laboration3.controller.controllerTicTacToe">
+<BorderPane stylesheets="@styles/background.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.laboration3.controller.controllerTicTacToe">
+
+    <top>
+        <VBox alignment="CENTER">
+
+            <Label text="TicTacToe">
+            <font>
+               <Font size="36.0" />
+            </font>
+            </Label>
+
+            <HBox alignment="CENTER" spacing="10.0">
+                <Label text="Games Played:" />
+                <Label text="${controller.model.gamesPlayed}" />
+            </HBox>
+
+         <Label text="${controller.model.gameStateMessage}" />
+
+        </VBox>
+    </top>
+
    <center>
-       <TilePane alignment="CENTER" hgap="10.0" maxHeight="280.0" maxWidth="280.0" minHeight="280.0" minWidth="280.0" prefColumns="3" prefHeight="280.0" prefRows="3" prefWidth="280.0" vgap="10.0" BorderPane.alignment="CENTER">
-           <BorderPane.margin>
-               <Insets />
-           </BorderPane.margin>
-           <Button alignment="CENTER" contentDisplay="CENTER" minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="X" textAlignment="CENTER">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="O">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="O">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="X">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="X">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="O">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="X">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="O">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
-           <Button minHeight="80.0" minWidth="80.0" mnemonicParsing="false" prefHeight="80.0" prefWidth="80.0" text="O">
-              <font>
-                  <Font size="36.0" />
-              </font>
-           </Button>
+       <TilePane alignment="CENTER" hgap="10.0" minWidth="280.0" prefColumns="3" prefRows="3" prefWidth="280.0" stylesheets="@styles/buttonStyle.css" vgap="10.0">
+
+           <Button id="square1" onMouseClicked="#buttonClicked" text="${controller.model.square1}" />
+           <Button id="square2" onMouseClicked="#buttonClicked" text="${controller.model.square2}" />
+           <Button id="square3" onMouseClicked="#buttonClicked" text="${controller.model.square3}" />
+           <Button id="square4" onMouseClicked="#buttonClicked" text="${controller.model.square4}" />
+           <Button id="square5" onMouseClicked="#buttonClicked" text="${controller.model.square5}" />
+           <Button id="square6" onMouseClicked="#buttonClicked" text="${controller.model.square6}" />
+           <Button id="square7" onMouseClicked="#buttonClicked" text="${controller.model.square7}" />
+           <Button id="square8" onMouseClicked="#buttonClicked" text="${controller.model.square8}" />
+           <Button id="square9" onMouseClicked="#buttonClicked" text="${controller.model.square9}" />
+
        </TilePane>
    </center>
+
    <bottom>
-       <VBox alignment="CENTER" BorderPane.alignment="CENTER">
-            <Label text="SCORE">
-                <font>
-                    <Font name="System Bold" size="12.0" />
-                </font>
-            </Label>
+       <VBox alignment="CENTER" spacing="10.0">
+
+           <Label text="SCORE" />
+
            <HBox alignment="CENTER" spacing="80.0">
-               <Label alignment="CENTER" text="PLAYER 1" textAlignment="CENTER" textFill="RED">
-                   <font>
-                       <Font name="System Bold" size="12.0" />
-                   </font>
-               </Label>
-               <Label alignment="CENTER" text="PLAYER 2" textAlignment="CENTER" textFill="BLUE">
-                   <font>
-                       <Font name="System Bold" size="12.0" />
-                   </font>
-            </Label>
+               <Label text="PLAYER 1" textFill="RED" />
+               <Label text="PLAYER 2" textFill="BLUE" />
            </HBox>
-           <HBox alignment="CENTER" spacing="120.0">
-               <Label alignment="CENTER" text="0" textAlignment="CENTER" textFill="RED">
-                   <font>
-                       <Font size="36.0" />
-                   </font>
-               </Label>
-               <Label alignment="CENTER" text="0" textFill="BLUE">
-                   <font>
-                       <Font size="36.0" />
-                   </font>
-               </Label>
+
+           <HBox alignment="CENTER" spacing="180.0">
+               <Label text="${controller.model.scorePlayer1}" textFill="RED" />
+               <Label text="${controller.model.scorePlayer2}" textFill="BLUE" />
            </HBox>
          <BorderPane.margin>
-            <Insets />
+            <Insets bottom="10.0" />
          </BorderPane.margin>
        </VBox>
    </bottom>
-   <top>
-       <VBox alignment="CENTER" BorderPane.alignment="CENTER">
-           <Label alignment="CENTER" contentDisplay="CENTER" text="TicTacToe" textAlignment="CENTER">
-              <font>
-                  <Font size="36.0" />
-              </font>
-              <VBox.margin>
-                  <Insets />
-              </VBox.margin>
-           </Label>
-           <HBox alignment="CENTER" spacing="10.0">
-               <VBox.margin>
-                   <Insets />
-               </VBox.margin>
-               <Label alignment="CENTER_RIGHT" text="Games Played:" />
-               <Label text="10" />
-           </HBox>
-       </VBox>
-   </top>
+
 </BorderPane>
