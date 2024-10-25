@@ -98,11 +98,7 @@ public class Model {
             return true;
         }
 
-        if(checkForWinnerDiagonal()){
-            return true;
-        }
-
-        return false;
+        return checkForWinnerDiagonal();
     }
 
     private boolean checkForWinnerRow(){

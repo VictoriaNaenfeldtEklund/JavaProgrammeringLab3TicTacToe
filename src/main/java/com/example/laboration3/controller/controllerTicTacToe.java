@@ -7,7 +7,7 @@ import javafx.scene.input.MouseEvent;
 
 public class controllerTicTacToe {
 
-    private Model model = new Model();
+    private final Model model = new Model();
 
     public Model getModel() {
         return model;
