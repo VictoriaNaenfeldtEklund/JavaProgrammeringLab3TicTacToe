@@ -21,7 +21,7 @@
                 <Label text="${controller.model.gamesPlayed}" textFill="SPRINGGREEN" />
             </HBox>
 
-         <Button text="START" textFill="#063320" style="-fx-background-color: SPRINGGREEN">
+         <Button id="startButton" onMouseClicked="#startButtonClicked" style="-fx-background-color: SPRINGGREEN" text="START NEW GAME" textFill="#063320">
             <font>
                <Font name="Arial" size="16.0" />
             </font></Button>
@@ -32,15 +32,15 @@
    <center>
        <TilePane alignment="CENTER" hgap="10.0" minWidth="280.0" prefColumns="3" prefRows="3" prefWidth="280.0" stylesheets="@styles/buttonStyle.css" vgap="10.0">
 
-           <Button id="square1" onMouseClicked="#buttonClicked" text="${controller.model.square1}" />
-           <Button id="square2" onMouseClicked="#buttonClicked" text="${controller.model.square2}" />
-           <Button id="square3" onMouseClicked="#buttonClicked" text="${controller.model.square3}" />
-           <Button id="square4" onMouseClicked="#buttonClicked" text="${controller.model.square4}" />
-           <Button id="square5" onMouseClicked="#buttonClicked" text="${controller.model.square5}" />
-           <Button id="square6" onMouseClicked="#buttonClicked" text="${controller.model.square6}" />
-           <Button id="square7" onMouseClicked="#buttonClicked" text="${controller.model.square7}" />
-           <Button id="square8" onMouseClicked="#buttonClicked" text="${controller.model.square8}" />
-           <Button id="square9" onMouseClicked="#buttonClicked" text="${controller.model.square9}" />
+           <Button id="square1" onMouseClicked="#squareButtonClicked" text="${controller.model.square1}" />
+           <Button id="square2" onMouseClicked="#squareButtonClicked" text="${controller.model.square2}" />
+           <Button id="square3" onMouseClicked="#squareButtonClicked" text="${controller.model.square3}" />
+           <Button id="square4" onMouseClicked="#squareButtonClicked" text="${controller.model.square4}" />
+           <Button id="square5" onMouseClicked="#squareButtonClicked" text="${controller.model.square5}" />
+           <Button id="square6" onMouseClicked="#squareButtonClicked" text="${controller.model.square6}" />
+           <Button id="square7" onMouseClicked="#squareButtonClicked" text="${controller.model.square7}" />
+           <Button id="square8" onMouseClicked="#squareButtonClicked" text="${controller.model.square8}" />
+           <Button id="square9" onMouseClicked="#squareButtonClicked" text="${controller.model.square9}" />
 
        </TilePane>
    </center>

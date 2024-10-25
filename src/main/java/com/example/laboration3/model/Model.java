@@ -7,26 +7,26 @@ import java.util.List;
 
 public class Model {
 
-    private Gamestate gameState = GAME;
-    private IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
-    private StringProperty gameStateMessage = new SimpleStringProperty("GAME RUNNING");
+    private Gamestate gameState = GAMEOVER;
+    private final IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
+    private final StringProperty gameStateMessage = new SimpleStringProperty("");
 
-    private IntegerProperty scorePlayer1 = new SimpleIntegerProperty(0);
-    private IntegerProperty scorePlayer2 = new SimpleIntegerProperty(0);
-    private Player player1 = new Player("Player1", "X", scorePlayer1);
-    private Player player2 = new Player("Player2", "O", scorePlayer2);
+    private final IntegerProperty scorePlayer1 = new SimpleIntegerProperty(0);
+    private final IntegerProperty scorePlayer2 = new SimpleIntegerProperty(0);
+    private final Player player1 = new Player("Player1", "X", scorePlayer1);
+    private final Player player2 = new Player("Player2", "O", scorePlayer2);
     private Player currentPlayer = player1;
 
-    private StringProperty square1 = new SimpleStringProperty("");
-    private StringProperty square2 = new SimpleStringProperty("");
-    private StringProperty square3 = new SimpleStringProperty("");
-    private StringProperty square4 = new SimpleStringProperty("");
-    private StringProperty square5 = new SimpleStringProperty("");
-    private StringProperty square6 = new SimpleStringProperty("");
-    private StringProperty square7 = new SimpleStringProperty("");
-    private StringProperty square8 = new SimpleStringProperty("");
-    private StringProperty square9 = new SimpleStringProperty("");
-    private List<StringProperty> squares = new ArrayList<>(9);
+    private final StringProperty square1 = new SimpleStringProperty("");
+    private final StringProperty square2 = new SimpleStringProperty("");
+    private final StringProperty square3 = new SimpleStringProperty("");
+    private final StringProperty square4 = new SimpleStringProperty("");
+    private final StringProperty square5 = new SimpleStringProperty("");
+    private final StringProperty square6 = new SimpleStringProperty("");
+    private final StringProperty square7 = new SimpleStringProperty("");
+    private final StringProperty square8 = new SimpleStringProperty("");
+    private final StringProperty square9 = new SimpleStringProperty("");
+    private final List<StringProperty> squares = new ArrayList<>(9);
 
     public Model() {
         squares.addAll(List.of(square1, square2, square3, square4, square5, square6, square7, square8, square9));
@@ -34,13 +34,13 @@ public class Model {
 
     public void play(String squareID){
 
-        // Set square symbol to the right square if gameState is GAME
+        if(squareID.equals("startButton")) {
+            resetGame();
+            gameState = GAME;
+        }
+
         if(gameState == GAME){
-
             setPlayerSymbolToSquare(squareID);
-
-            // changes gamestate to gameover if winner or draw
-            // sets message to UI
             checkForWinnerOrDraw();
 
             if(gameState == GAMEOVER){
@@ -48,6 +48,12 @@ public class Model {
             } else {
                 switchCurrentPlayer();
             }
+        }
+    }
+
+    private void resetGame(){
+        for(StringProperty square : squares){
+            square.setValue("");
         }
     }
 
@@ -279,7 +285,6 @@ public class Model {
     public void setSquare9(String square9) {
         this.square9.set(square9);
     }
-
 
     public int getScorePlayer1() {
         return scorePlayer1.get();

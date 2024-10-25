@@ -14,12 +14,17 @@ public class controllerTicTacToe {
     }
 
     @FXML
-    public void buttonClicked(MouseEvent mouseEvent) {
+    public void squareButtonClicked(MouseEvent mouseEvent) {
         var square = (Button) mouseEvent.getSource();
         var squareSymbol = square.getText();
 
         if (squareSymbol.isEmpty()){
             model.play(square.getId());
         }
+    }
+
+    public void startButtonClicked(MouseEvent mouseEvent) {
+        var startButton = (Button) mouseEvent.getSource();
+        model.play(startButton.getId());
     }
 }
