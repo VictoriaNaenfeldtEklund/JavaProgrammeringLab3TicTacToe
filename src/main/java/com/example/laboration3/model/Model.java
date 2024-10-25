@@ -2,8 +2,11 @@ package com.example.laboration3.model;
 
 import static com.example.laboration3.model.Gamestate.*;
 import javafx.beans.property.*;
+import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Model {
 
@@ -11,10 +14,10 @@ public class Model {
     private final IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
     private final StringProperty gameStateMessage = new SimpleStringProperty("");
 
-    private final IntegerProperty scorePlayer1 = new SimpleIntegerProperty(0);
-    private final IntegerProperty scorePlayer2 = new SimpleIntegerProperty(0);
-    private final Player player1 = new Player("Player1", "X", scorePlayer1);
-    private final Player player2 = new Player("Player2", "O", scorePlayer2);
+    private final Player player1 = new Player("Player1", "X", 0);
+    private final Player player2 = new Player("Player2", "O", 0);
+    private final IntegerProperty scorePlayer1 = new SimpleIntegerProperty(player1.score());
+    private final IntegerProperty scorePlayer2 = new SimpleIntegerProperty(player2.score());
     private Player currentPlayer = player1;
 
     private final StringProperty square1 = new SimpleStringProperty("");
@@ -34,21 +37,30 @@ public class Model {
 
     public void play(String squareID){
 
-        if(squareID.equals("startButton")) {
-            resetGame();
-            gameState = GAME;
-        }
-
         if(gameState == GAME){
+
             setPlayerSymbolToSquare(squareID);
             checkForWinnerOrDraw();
+            switchCurrentPlayer();
 
             if(gameState == GAMEOVER){
                 gamesPlayed.set(gamesPlayed.get() + 1);
             } else {
+                setComputerSymbolToEmptySquare();
+                checkForWinnerOrDraw();
                 switchCurrentPlayer();
+
+                if(gameState == GAMEOVER){
+                    gamesPlayed.set(gamesPlayed.get() + 1);
+                }
             }
         }
+    }
+
+    public void startGame() {
+        resetGame();
+        currentPlayer = player1;
+        gameState = GAME;
     }
 
     private void resetGame(){
@@ -71,15 +83,28 @@ public class Model {
         }
     }
 
+    private void setComputerSymbolToEmptySquare() {
+
+        Random random = new Random();
+        boolean emptySquareNotFound = true;
+
+        while(emptySquareNotFound){
+            var randomSquare = squares.get(random.nextInt(squares.size()));
+
+            if(randomSquare.get().isEmpty()){
+                randomSquare.set(currentPlayer.symbol());
+                emptySquareNotFound = false;
+            }
+        }
+    }
+
     private void checkForWinnerOrDraw(){
 
         if (checkForWinner()){
             gameStateMessage.set("Winner is " + currentPlayer.name() + "(" + currentPlayer.symbol() + ")!");
             addPointToPlayerScore();
             gameState = GAMEOVER;
-        }
-
-        if(checkForDraw()){
+        } else if (checkForDraw()){
             gameStateMessage.set("DRAW!");
             gameState = GAMEOVER;
         }

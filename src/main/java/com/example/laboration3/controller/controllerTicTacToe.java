@@ -24,7 +24,6 @@ public class controllerTicTacToe {
     }
 
     public void startButtonClicked(MouseEvent mouseEvent) {
-        var startButton = (Button) mouseEvent.getSource();
-        model.play(startButton.getId());
+        model.startGame();
     }
 }
