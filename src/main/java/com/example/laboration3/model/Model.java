@@ -11,6 +11,7 @@ public class Model {
 
     Random random = new Random();
     private Gamestate gameState = GAME_OVER;
+    private Gamestate lastGameState = GAME_OVER;
     private final IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
     private final StringProperty gameStateMessage = new SimpleStringProperty("");
 
@@ -54,9 +55,14 @@ public class Model {
     public void play(String squareID){
 
         if(gameState == GAME_FRIEND){
-            playOpponentFriend(squareID);
+            makePlayerMove(squareID);
+
         } else if (gameState == GAME_COMPUTER){
-            playOpponentComputer(squareID);
+            makePlayerMove(squareID);
+
+            if(gameState != GAME_OVER) {
+                makeComputerMove();
+            }
         }
     }
 
@@ -68,29 +74,6 @@ public class Model {
 
     private Player getRandomPlayer(){
         return random.nextInt(2) == 0 ? player1 : player2;
-    }
-
-    private void playOpponentFriend(String squareID){
-        makePlayerMove(squareID);
-
-        if(gameState == GAME_OVER) {
-            gamesPlayed.set(gamesPlayed.get() + 1);
-        }
-    }
-
-    private void playOpponentComputer(String squareID){
-
-        makePlayerMove(squareID);
-
-        if(gameState == GAME_OVER) {
-            gamesPlayed.set(gamesPlayed.get() + 1);
-        } else {
-            makeComputerMove();
-
-            if(gameState == GAME_OVER){
-                gamesPlayed.set(gamesPlayed.get() + 1);
-            }
-        }
     }
 
     private void makeComputerMove() {
@@ -138,9 +121,12 @@ public class Model {
         if (checkForWinner()){
             gameStateMessage.set(currentPlayer.name() + " (" + currentPlayer.symbol() + ") wins!");
             addPointToPlayerScore();
+            setGamesPlayed(gamesPlayed.get() + 1);
             gameState = GAME_OVER;
+
         } else if (checkForDraw()){
             gameStateMessage.set("DRAW!");
+            setGamesPlayed(gamesPlayed.get() + 1);
             gameState = GAME_OVER;
         }
     }
