@@ -1,6 +1,7 @@
 .button {
     -fx-font-size: 36px;
     -fx-background-color: #063320;
+    -fx-text-fill: springgreen;
     -fx-border-color: springgreen;
     -fx-text-alignment: CENTER;
     -fx-pref-width: 80px;
