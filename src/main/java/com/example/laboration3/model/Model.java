@@ -2,7 +2,6 @@ package com.example.laboration3.model;
 
 import static com.example.laboration3.model.Gamestate.*;
 import javafx.beans.property.*;
-import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,8 @@ import java.util.Random;
 
 public class Model {
 
-    private Gamestate gameState = GAMEOVER;
+    Random random = new Random();
+    private Gamestate gameState = GAME_OVER;
     private final IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
     private final StringProperty gameStateMessage = new SimpleStringProperty("");
 
@@ -35,38 +35,74 @@ public class Model {
         squares.addAll(List.of(square1, square2, square3, square4, square5, square6, square7, square8, square9));
     }
 
-    public void play(String squareID){
+    public void startGame(String buttonId) {
+        resetGame();
+        currentPlayer = getRandomPlayer();
+        gameStateMessage.set(currentPlayer.name() + " starts!");
 
-        if(gameState == GAME){
+        if(buttonId.equals("friend")){
+            gameState = GAME_FRIEND;
+        } else if(buttonId.equals("computer")){
+            gameState = GAME_COMPUTER;
 
-            setPlayerSymbolToSquare(squareID);
-            checkForWinnerOrDraw();
-            switchCurrentPlayer();
-
-            if(gameState == GAMEOVER){
-                gamesPlayed.set(gamesPlayed.get() + 1);
-            } else {
-                setComputerSymbolToEmptySquare();
-                checkForWinnerOrDraw();
-                switchCurrentPlayer();
-
-                if(gameState == GAMEOVER){
-                    gamesPlayed.set(gamesPlayed.get() + 1);
-                }
+            if(currentPlayer.equals(player2)){
+                makeComputerMove();
             }
         }
     }
 
-    public void startGame() {
-        resetGame();
-        currentPlayer = player1;
-        gameState = GAME;
+    public void play(String squareID){
+
+        if(gameState == GAME_FRIEND){
+            playOpponentFriend(squareID);
+        } else if (gameState == GAME_COMPUTER){
+            playOpponentComputer(squareID);
+        }
     }
 
     private void resetGame(){
         for(StringProperty square : squares){
             square.setValue("");
         }
+    }
+
+    private Player getRandomPlayer(){
+        return random.nextInt(2) == 0 ? player1 : player2;
+    }
+
+    private void playOpponentFriend(String squareID){
+        makePlayerMove(squareID);
+
+        if(gameState == GAME_OVER) {
+            gamesPlayed.set(gamesPlayed.get() + 1);
+        }
+    }
+
+    private void playOpponentComputer(String squareID){
+
+        makePlayerMove(squareID);
+
+        if(gameState == GAME_OVER) {
+            gamesPlayed.set(gamesPlayed.get() + 1);
+        } else {
+            makeComputerMove();
+
+            if(gameState == GAME_OVER){
+                gamesPlayed.set(gamesPlayed.get() + 1);
+            }
+        }
+    }
+
+    private void makeComputerMove() {
+        setComputerSymbolToEmptySquare();
+        checkForWinnerOrDraw();
+        switchCurrentPlayer();
+    }
+
+    private void makePlayerMove(String squareID) {
+        setPlayerSymbolToSquare(squareID);
+        checkForWinnerOrDraw();
+        switchCurrentPlayer();
     }
 
     private void setPlayerSymbolToSquare(String squareID) {
@@ -85,7 +121,6 @@ public class Model {
 
     private void setComputerSymbolToEmptySquare() {
 
-        Random random = new Random();
         boolean emptySquareNotFound = true;
 
         while(emptySquareNotFound){
@@ -101,12 +136,12 @@ public class Model {
     private void checkForWinnerOrDraw(){
 
         if (checkForWinner()){
-            gameStateMessage.set("Winner is " + currentPlayer.name() + "(" + currentPlayer.symbol() + ")!");
+            gameStateMessage.set(currentPlayer.name() + " (" + currentPlayer.symbol() + ") wins!");
             addPointToPlayerScore();
-            gameState = GAMEOVER;
+            gameState = GAME_OVER;
         } else if (checkForDraw()){
             gameStateMessage.set("DRAW!");
-            gameState = GAMEOVER;
+            gameState = GAME_OVER;
         }
     }
 
