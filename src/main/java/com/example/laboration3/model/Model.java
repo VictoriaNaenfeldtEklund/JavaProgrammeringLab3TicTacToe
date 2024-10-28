@@ -15,8 +15,10 @@ public class Model {
     private final IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
     private final StringProperty gameStateMessage = new SimpleStringProperty("");
 
-    private final Player player1 = new Player("Player1", "X", 0);
-    private final Player player2 = new Player("Player2", "O", 0);
+    private final Player player1 = new Player("Player 1", "X", 0);
+    private final Player player2 = new Player("Player 2", "O", 0);
+    private final StringProperty namePlayer1 = new SimpleStringProperty(player1.name());
+    private final StringProperty namePlayer2 = new SimpleStringProperty(player2.name());
     private final IntegerProperty scorePlayer1 = new SimpleIntegerProperty(player1.score());
     private final IntegerProperty scorePlayer2 = new SimpleIntegerProperty(player2.score());
     private Player currentPlayer = player1;
@@ -393,5 +395,29 @@ public class Model {
 
     public void setGameStateMessage(String gameStateMessage) {
         this.gameStateMessage.set(gameStateMessage);
+    }
+
+    public String getNamePlayer1() {
+        return namePlayer1.get();
+    }
+
+    public StringProperty namePlayer1Property() {
+        return namePlayer1;
+    }
+
+    public void setNamePlayer1(String namePlayer1) {
+        this.namePlayer1.set(namePlayer1);
+    }
+
+    public String getNamePlayer2() {
+        return namePlayer2.get();
+    }
+
+    public StringProperty namePlayer2Property() {
+        return namePlayer2;
+    }
+
+    public void setNamePlayer2(String namePlayer2) {
+        this.namePlayer2.set(namePlayer2);
     }
 }
