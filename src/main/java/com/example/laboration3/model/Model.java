@@ -1,6 +1,6 @@
 package com.example.laboration3.model;
 
-import static com.example.laboration3.model.Gamestate.*;
+import static com.example.laboration3.model.GameState.*;
 import javafx.beans.property.*;
 
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import java.util.Random;
 public class Model {
 
     Random random = new Random();
-    private Gamestate gameState = GAME_OVER;
-    private Gamestate lastGameState = GAME_OVER;
+    private GameState gameState = GAME_OVER;
+    private GameState lastGameState = GAME_OVER;
     private final IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
     private final StringProperty gameStateMessage = new SimpleStringProperty("");
 
@@ -36,21 +36,50 @@ public class Model {
         squares.addAll(List.of(square1, square2, square3, square4, square5, square6, square7, square8, square9));
     }
 
+    // START GAME METHODS
+
     public void startGame(String buttonId) {
-        resetGame();
-        currentPlayer = getRandomPlayer();
-        gameStateMessage.set(currentPlayer.name() + " starts!");
 
         if(buttonId.equals("friend")){
-            gameState = GAME_FRIEND;
+            resetGame(GAME_FRIEND);
+
         } else if(buttonId.equals("computer")){
-            gameState = GAME_COMPUTER;
+            resetGame(GAME_COMPUTER);
 
             if(currentPlayer.equals(player2)){
                 makeComputerMove();
             }
         }
     }
+
+    private void resetGame(GameState currentGameState){
+        resetBoard();
+        setRandomStartPlayer();
+        setGameStateMessage(currentPlayer.name() + " starts!");
+        resetScoresIfNewGameState(currentGameState);
+        gameState = currentGameState;
+        lastGameState = currentGameState;
+    }
+
+    private void resetBoard() {
+        for(StringProperty square : squares){
+            square.setValue("");
+        }
+    }
+
+    private void setRandomStartPlayer() {
+        currentPlayer = random.nextInt(2) == 0 ? player1 : player2;
+    }
+
+    private void resetScoresIfNewGameState(GameState currentGameState) {
+        if(lastGameState != currentGameState){
+            setGamesPlayed(0);
+            setScorePlayer1(0);
+            setScorePlayer2(0);
+        }
+    }
+
+    // GAME PLAY METHODS
 
     public void play(String squareID){
 
@@ -64,16 +93,6 @@ public class Model {
                 makeComputerMove();
             }
         }
-    }
-
-    private void resetGame(){
-        for(StringProperty square : squares){
-            square.setValue("");
-        }
-    }
-
-    private Player getRandomPlayer(){
-        return random.nextInt(2) == 0 ? player1 : player2;
     }
 
     private void makeComputerMove() {
@@ -119,13 +138,13 @@ public class Model {
     private void checkForWinnerOrDraw(){
 
         if (checkForWinner()){
-            gameStateMessage.set(currentPlayer.name() + " (" + currentPlayer.symbol() + ") wins!");
+            setGameStateMessage(currentPlayer.name() + " (" + currentPlayer.symbol() + ") wins!");
             addPointToPlayerScore();
             setGamesPlayed(gamesPlayed.get() + 1);
             gameState = GAME_OVER;
 
         } else if (checkForDraw()){
-            gameStateMessage.set("DRAW!");
+            setGameStateMessage("DRAW!");
             setGamesPlayed(gamesPlayed.get() + 1);
             gameState = GAME_OVER;
         }
@@ -204,9 +223,9 @@ public class Model {
 
     private void addPointToPlayerScore() {
         if(currentPlayer.equals(player1)){
-            scorePlayer1.set(scorePlayer1.get() + 1);
+            setScorePlayer1(scorePlayer1.get() + 1);
         } else {
-            scorePlayer2.set(scorePlayer2.get() + 1);
+            setScorePlayer2(scorePlayer2.get() + 1);
         }
     }
 
