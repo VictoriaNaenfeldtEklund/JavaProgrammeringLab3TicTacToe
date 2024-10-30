@@ -2,6 +2,7 @@ package com.example.laboration3.model;
 
 import static com.example.laboration3.model.GameState.*;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class Model {
     private final StringProperty square8 = new SimpleStringProperty("");
     private final StringProperty square9 = new SimpleStringProperty("");
     private final List<StringProperty> squares = new ArrayList<>(9);
+//    private final ListProperty<String> squares2 = new SimpleListProperty<>(FXCollections.observableArrayList());
 
     public Model() {
         squares.addAll(List.of(square1, square2, square3, square4, square5, square6, square7, square8, square9));
