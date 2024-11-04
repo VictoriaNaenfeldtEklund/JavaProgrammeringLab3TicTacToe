@@ -1,23 +1,32 @@
 package com.example.laboration3.model;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Player {
 
-    private String name;
+    private StringProperty name;
     private String symbol;
-    private String score;
+    private IntegerProperty score;
 
-    public Player(String name, String symbol, String score) {
-        this.name = name;
+    public Player(String name, String symbol) {
+        this.name = new SimpleStringProperty(name);
+        score = new SimpleIntegerProperty(0);
         this.symbol = symbol;
-        this.score = score;
     }
 
     public String getName() {
+        return name.get();
+    }
+
+    public StringProperty nameProperty() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name.set(name);
     }
 
     public String getSymbol() {
@@ -28,11 +37,15 @@ public class Player {
         this.symbol = symbol;
     }
 
-    public String getScore() {
+    public int getScore() {
+        return score.get();
+    }
+
+    public IntegerProperty scoreProperty() {
         return score;
     }
 
-    public void setScore(String score) {
-        this.score = score;
+    public void setScore(int score) {
+        this.score.set(score);
     }
 }

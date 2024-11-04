@@ -13,39 +13,39 @@ public class controllerTicTacToe {
     }
 
     public void square0Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.ZERO);
+        model.playGame(SquareIndex.ZERO);
     }
 
     public void square1Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.ONE);
+        model.playGame(SquareIndex.ONE);
     }
 
     public void square2Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.TWO);
+        model.playGame(SquareIndex.TWO);
     }
 
     public void square3Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.THREE);
+        model.playGame(SquareIndex.THREE);
     }
 
     public void square4Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.FOUR);
+        model.playGame(SquareIndex.FOUR);
     }
 
     public void square5Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.FIVE);
+        model.playGame(SquareIndex.FIVE);
     }
 
     public void square6Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.SIX);
+        model.playGame(SquareIndex.SIX);
     }
 
     public void square7Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.SEVEN);
+        model.playGame(SquareIndex.SEVEN);
     }
 
     public void square8Clicked(MouseEvent mouseEvent) {
-        model.setSquareSymbol(SquareIndex.EIGHT);
+        model.playGame(SquareIndex.EIGHT);
     }
 
     public void opponentComputerClicked(MouseEvent mouseEvent) {
