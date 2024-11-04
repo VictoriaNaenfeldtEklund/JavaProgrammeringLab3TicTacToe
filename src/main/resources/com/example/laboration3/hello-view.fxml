@@ -23,7 +23,7 @@
                 <Button onMouseClicked="#opponentFriendClicked" prefWidth="100.0" text="Friend" />
                 <Button onMouseClicked="#opponentComputerClicked" prefWidth="100.0" text="Computer" />
             </HBox>
-            <Label text="PLAYER 1 STARTS!">
+            <Label text="${controller.model.gameMessage}">
             <VBox.margin>
                <Insets bottom="5.0" top="10.0" />
             </VBox.margin></Label>
