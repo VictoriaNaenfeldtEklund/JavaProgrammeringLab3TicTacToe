@@ -36,15 +36,15 @@
           <RowConstraints prefHeight="90.0" valignment="CENTER" vgrow="SOMETIMES" />
           <RowConstraints prefHeight="90.0" valignment="CENTER" vgrow="SOMETIMES" />
         </rowConstraints>
-           <Button text="O" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-           <Button text="X" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-           <Button text="X" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-           <Button text="X" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-           <Button text="X" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-           <Button text="X" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-           <Button text="O" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-           <Button text="X" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-           <Button text="X" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+           <Button onMouseClicked="#square0Clicked" text="O" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+           <Button onMouseClicked="#square1Clicked" text="X" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+           <Button onMouseClicked="#square2Clicked" text="X" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+           <Button onMouseClicked="#square3Clicked" text="X" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+           <Button onMouseClicked="#square4Clicked" text="X" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+           <Button onMouseClicked="#square5Clicked" text="X" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+           <Button onMouseClicked="#square6Clicked" text="O" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+           <Button onMouseClicked="#square7Clicked" text="X" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+           <Button onMouseClicked="#square8Clicked" text="X" GridPane.columnIndex="2" GridPane.rowIndex="2" />
       </GridPane>
    </center>
 
