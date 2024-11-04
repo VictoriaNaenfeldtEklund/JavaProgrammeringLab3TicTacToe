@@ -1,5 +1,17 @@
 .root {
     -fx-background-color: #063320;
-    -fx-font: 16px "Arial";
-    -fx-font-weight: bold;
+}
+
+.label {
+    -fx-text-fill: springgreen;
+    -fx-font-size: 16px;
+    -fx-text-alignment: CENTER;
+    -fx-alignment: CENTER;
+}
+
+.button {
+    -fx-font-size: 16px;
+    -fx-background-color: springgreen;
+    -fx-text-fill: #063320;
+    -fx-text-alignment: CENTER;
 }
