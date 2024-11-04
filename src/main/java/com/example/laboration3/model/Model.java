@@ -70,6 +70,7 @@ public class Model {
             setGameMessage(currentPlayer.getName() + " wins!");
         } else if (checkForDraw()){
             currentGameState = GAME_OVER;
+            setGamesPlayed(getGamesPlayed() + 1);
             setGameMessage("DRAW!");
         }
     }
