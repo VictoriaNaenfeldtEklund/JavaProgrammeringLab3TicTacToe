@@ -36,15 +36,15 @@
           <RowConstraints prefHeight="90.0" valignment="CENTER" vgrow="SOMETIMES" />
           <RowConstraints prefHeight="90.0" valignment="CENTER" vgrow="SOMETIMES" />
         </rowConstraints>
-           <Button onMouseClicked="#square0Clicked" text="O" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-           <Button onMouseClicked="#square1Clicked" text="X" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-           <Button onMouseClicked="#square2Clicked" text="X" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-           <Button onMouseClicked="#square3Clicked" text="X" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-           <Button onMouseClicked="#square4Clicked" text="X" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-           <Button onMouseClicked="#square5Clicked" text="X" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-           <Button onMouseClicked="#square6Clicked" text="O" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-           <Button onMouseClicked="#square7Clicked" text="X" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-           <Button onMouseClicked="#square8Clicked" text="X" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+           <Button onMouseClicked="#square0Clicked" text="${controller.model.squares[0]}" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+           <Button onMouseClicked="#square1Clicked" text="${controller.model.squares[1]}" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+           <Button onMouseClicked="#square2Clicked" text="${controller.model.squares[2]}" GridPane.columnIndex="2" GridPane.rowIndex="0" />
+           <Button onMouseClicked="#square3Clicked" text="${controller.model.squares[3]}" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+           <Button onMouseClicked="#square4Clicked" text="${controller.model.squares[4]}" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+           <Button onMouseClicked="#square5Clicked" text="${controller.model.squares[5]}" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+           <Button onMouseClicked="#square6Clicked" text="${controller.model.squares[6]}" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+           <Button onMouseClicked="#square7Clicked" text="${controller.model.squares[7]}" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+           <Button onMouseClicked="#square8Clicked" text="${controller.model.squares[8]}" GridPane.columnIndex="2" GridPane.rowIndex="2" />
       </GridPane>
    </center>
 
