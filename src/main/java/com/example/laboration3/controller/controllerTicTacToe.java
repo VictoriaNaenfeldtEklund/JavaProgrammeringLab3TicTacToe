@@ -51,4 +51,8 @@ public class controllerTicTacToe {
     public void opponentComputerClicked(MouseEvent mouseEvent) {
         model.startGameComputer();
     }
+
+    public void opponentFriendClicked(MouseEvent mouseEvent) {
+        model.startGameFriend();
+    }
 }
