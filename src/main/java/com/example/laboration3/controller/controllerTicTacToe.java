@@ -47,4 +47,8 @@ public class controllerTicTacToe {
     public void square8Clicked(MouseEvent mouseEvent) {
         model.setSquareSymbol(SquareIndex.EIGHT);
     }
+
+    public void opponentComputerClicked(MouseEvent mouseEvent) {
+        model.startGameComputer();
+    }
 }
