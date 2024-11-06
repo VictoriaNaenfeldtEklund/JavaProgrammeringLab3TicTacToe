@@ -16,6 +16,7 @@ import static com.example.laboration3.model.GameState.*;
 public class Model {
 
     Random random = new Random();
+
     private GameState currentGameState = GAME_OVER;
     private GameState lastGameState = GAME_OVER;
     private IntegerProperty gamesPlayed = new SimpleIntegerProperty(0);
@@ -24,9 +25,15 @@ public class Model {
     private Player player1 = new Player("Player 1", "X");
     private Player player2 = new Player("Player 2", "O");
     private Player currentPlayer = player1;
+
     private ObservableList<String> squares = FXCollections.observableArrayList();
 
     public Model(){
+        IntStream.range(0, 9).forEach(_ -> squares.add(""));
+    }
+
+    public Model(Random random){
+        this.random = random;
         IntStream.range(0, 9).forEach(_ -> squares.add(""));
     }
 
@@ -50,32 +57,39 @@ public class Model {
     public void playGame(SquareIndex squareIndex){
 
         if(currentGameState != GAME_OVER){
-            setSquareSymbol(squareIndex);
-            checkForWinning();
-            switchCurrentPlayer();
-
-            if (currentGameState == GAME_COMPUTER){
-                makeComputerMove();
-                checkForWinning();
-                switchCurrentPlayer();
+            if(setSquareSymbol(squareIndex)){
+                if(!checkForWinnerOrDraw()){
+                    switchCurrentPlayer();
+                    if (currentGameState == GAME_COMPUTER){
+                        makeComputerMove();
+                        if(!checkForWinnerOrDraw()){
+                            switchCurrentPlayer();
+                        }
+                    }
+                }
             }
         }
     }
 
-    private void checkForWinning(){
-        if(checkForWinningRow() || checkForWinningColumn() || checkForWinningDiagonal()){
+    public boolean checkForWinnerOrDraw(){
+        if(checkForWinner() || checkForDraw()){
             currentGameState = GAME_OVER;
             setGamesPlayed(getGamesPlayed() + 1);
-            currentPlayer.setScore(currentPlayer.getScore() + 1);
-            setGameMessage(currentPlayer.getName() + " wins!");
-        } else if (checkForDraw()){
-            currentGameState = GAME_OVER;
-            setGamesPlayed(getGamesPlayed() + 1);
-            setGameMessage("DRAW!");
+            return true;
         }
+        return false;
     }
 
-    private boolean checkForWinningRow() {
+    public boolean checkForWinner(){
+        if(checkForWinnerRow() || checkForWinnerColumn() || checkForWinnerDiagonal()){
+            currentPlayer.setScore(currentPlayer.getScore() + 1);
+            setGameMessage(currentPlayer.getName() + " wins!");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean checkForWinnerRow() {
         for (int i = 0; i < 7; i = i + 3) {
             String square1 = squares.get(i);
             String square2 = squares.get(i + 1);
@@ -88,7 +102,7 @@ public class Model {
         return false;
     }
 
-    private boolean checkForWinningColumn() {
+    public boolean checkForWinnerColumn() {
         for (int i = 0; i < 3; i++) {
             String square1 = squares.get(i);
             String square2 = squares.get(i+3);
@@ -101,30 +115,44 @@ public class Model {
         return false;
     }
 
-    private boolean checkForWinningDiagonal(){
+    public boolean checkForWinnerDiagonal(){
         String s0 = squares.get(0);
         String s2 = squares.get(2);
         String s4 = squares.get(4);
         String s6 = squares.get(6);
         String s8 = squares.get(8);
 
-        return !s4.isEmpty() && (s0.equals(s4) && s4.equals(s8) || s2.equals(s4) && s4.equals(s6));
+        return !s4.isEmpty() && ((s0.equals(s4) && s4.equals(s8)) || (s2.equals(s4) && s4.equals(s6)));
     }
 
-    private boolean checkForDraw(){
+    public boolean checkForDraw(){
+        if(isBoardFull()){
+            setGameMessage("DRAW!");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isBoardFull(){
         return squares.stream().noneMatch(String::isEmpty);
     }
 
-    private void makeComputerMove() {
+    public boolean hasBoardEmptySpaceLeft(){
+        return squares.stream().anyMatch(String::isEmpty);
+    }
+
+    public void makeComputerMove() {
 
         SquareIndex randomSquareIndex;
 
-        do {
-            randomSquareIndex = Arrays.stream(SquareIndex.values()).toList().get(random.nextInt(9));
-        } while(!setSquareSymbol(randomSquareIndex));
+        if(hasBoardEmptySpaceLeft()){
+            do {
+                randomSquareIndex = Arrays.stream(SquareIndex.values()).toList().get(random.nextInt(9));
+            } while(!setSquareSymbol(randomSquareIndex));
+        }
     }
 
-    private void resetGame() {
+    public void resetGame() {
 
         if(lastGameState != currentGameState){
             resetScoresToZero();
@@ -134,17 +162,17 @@ public class Model {
         setGameMessage(currentPlayer.getName() + " starts!");
     }
 
-    private void resetScoresToZero() {
+    public void resetScoresToZero() {
         player1.setScore(0);
         player2.setScore(0);
         setGamesPlayed(0);
     }
 
-    private void resetSquaresToEmpty() {
+    public void resetSquaresToEmpty() {
         IntStream.range(0, 9).forEach(i -> squares.set(i, ""));
     }
 
-    private boolean setSquareSymbol(SquareIndex squareIndex){
+    public boolean setSquareSymbol(SquareIndex squareIndex){
         if(squares.get(squareIndex.ordinal()).isEmpty()){
             squares.set(squareIndex.ordinal(), currentPlayer.getSymbol());
             return true;
@@ -152,7 +180,7 @@ public class Model {
         return false;
     }
 
-    private void switchCurrentPlayer(){
+    public void switchCurrentPlayer(){
         currentPlayer = currentPlayer.equals(player1) ? player2 : player1;
     }
 
@@ -162,12 +190,32 @@ public class Model {
         return squares;
     }
 
+    public void setSquares(ObservableList<String> squares) {
+        this.squares = squares;
+    }
+
     public Player getPlayer1() {
         return player1;
     }
 
     public Player getPlayer2() {
         return player2;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
+    }
+
+    public GameState getCurrentGameState(){
+        return currentGameState;
+    }
+
+    public void setCurrentGameState(GameState currentGameState) {
+        this.currentGameState = currentGameState;
     }
 
     // GAME PROPERTIES

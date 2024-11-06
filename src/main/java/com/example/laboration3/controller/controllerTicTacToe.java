@@ -45,7 +45,7 @@ public class controllerTicTacToe {
     }
 
     public void square8Clicked(MouseEvent mouseEvent) {
-        model.playGame(SquareIndex.EIGHT);
+        model.playGame (SquareIndex.EIGHT);
     }
 
     public void opponentComputerClicked(MouseEvent mouseEvent) {
