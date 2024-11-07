@@ -8,6 +8,9 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ *  Koden som testar för giltiga drag och om rundan är färdigspelad ska ha tester.
+ */
 class ModelTest {
 
     Model model = new Model();
