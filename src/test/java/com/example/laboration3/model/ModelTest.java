@@ -4,265 +4,325 @@ import javafx.collections.ObservableList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Random;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- *  Koden som testar för giltiga drag och om rundan är färdigspelad ska ha tester.
+ *  player1 = "X"
+ *  player2 = "O"   (Computer is always player2)
+ *  If call to startGameComputer() or startGameFriend() then initial start player is player2, else start player is player1.
+ *  MyRandom overrides Random method nextInt(int bound), used for tests with random computer move.
  */
 class ModelTest {
 
     Model model = new Model();
 
+    // TEST CODE FOR INITIAL STATE
+
     @Test
+    @DisplayName("GAME_COMPUTER: Initial call to startGameComputer() makes a computer move (sets player2 symbol to square 0 and changes currentGameState to GAME_COMPUTER).")
     void initialCallToStartGameComputerMakesAComputerMove(){
-        Model modelWithRandom = new Model(new MyRandom());
-        modelWithRandom.startGameComputer();
-        assertEquals(modelWithRandom.getPlayer2().getSymbol(), modelWithRandom.getSquares().getFirst());
+
+        Model modelWithMyRandom = new Model(new MyRandom(0));
+
+        modelWithMyRandom.startGameComputer();
+
+        assertAll(
+                () -> assertEquals(modelWithMyRandom.getPlayer2().getSymbol(), modelWithMyRandom.getSquares().getFirst()),
+                () -> assertEquals(GameState.GAME_COMPUTER, modelWithMyRandom.getCurrentGameState())
+        );
     }
 
     @Test
-    void initialCallToStartGameComputerWhenSwitchingStartPlayerSkipsComputerMoveAndKeepsCurrentPlayerToPlayer1(){
-        // currentPlayer = player2
-        // reset game changes currentPlayer = player1
-        // computer move if-condition does not change changes currentPlayer = player1
-        model.setCurrentPlayer(model.getPlayer2());
-        model.startGameComputer();
-        assertEquals(model.getPlayer1(), model.getCurrentPlayer());
+    @DisplayName("GAME_COMPUTER: Initial call to startGameComputer() when start player is player1 does not make a computer move (squares should be empty but changes currentGameState to GAME_COMPUTER).")
+    void initialCallToStartGameComputerWhenStartPlayerIsPlayer1DoesNotMakeAComputerMove(){
+
+        Model modelWithMyRandom = new Model(new MyRandom(0));
+        modelWithMyRandom.switchCurrentPlayer();
+
+        modelWithMyRandom.startGameComputer();
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_COMPUTER, modelWithMyRandom.getCurrentGameState()),
+                () -> assertTrue(modelWithMyRandom.getSquares().stream().allMatch(String::isEmpty))
+        );
     }
 
     @Test
-    void callToMakeComputerMoveDoesNotMakeAMoveIfBoardIsFull(){
-        ObservableList<String> squares = model.getSquares();
-        squares.setAll(model.getPlayer1().getSymbol());
+    @DisplayName("GAME_FRIEND: initial call to startGameFriend() sets GameState to GAME_FRIEND and resets board")
+    void callToStartGameFriendSetsGameStateGameFriendAndResetsBoard(){
+        model.startGameComputer(); // sets computer symbol to square 0.
+
+        model.startGameFriend();
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_FRIEND, model.getCurrentGameState()),
+                () -> assertTrue(model.getSquares().stream().allMatch(String::isEmpty))
+        );
+    }
+
+    @Test
+    @DisplayName("GAME_OVER: call to playGame(SquareIndex squareIndex) leaves game unchanged.")
+    void callToPlayGameWhenGameStateGameOverLeavesGameUnchanged(){
+
+        model.playGame(SquareIndex.ZERO);
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_OVER, model.getCurrentGameState()),
+                () -> assertTrue(model.getSquares().stream().allMatch(String::isEmpty))
+        );
+    }
+
+    // TEST CODE FOR VALID MOVES
+
+    @Test
+    @DisplayName("GAME_COMPUTER: Call to playGame(SquareIndex.ONE) sets player1 symbol to square 1 and player2 symbol to square 0.")
+    void callToPlayGameSetsPlayersSymbolsToCorrectSquares(){
+        ObservableList<String> expectedSquares = model.getSquares();
+        expectedSquares.set(0, "O");
+        expectedSquares.set(1, "X");
+        Model modelWithMyRandom = new Model(new MyRandom(0));
+        modelWithMyRandom.setCurrentGameState(GameState.GAME_COMPUTER);
+
+        modelWithMyRandom.playGame(SquareIndex.ONE);
+
+        assertEquals(expectedSquares, modelWithMyRandom.getSquares());
+    }
+
+    @Test
+    @DisplayName("GAME_COMPUTER: Call to playGame(SquareIndex occupiedSquare) leaves game unchanged.")
+    void callToPlayGameWithOccupiedSquareLeavesGameUnchanged(){
+        ObservableList<String> expectedSquares = model.getSquares();
+        expectedSquares.set(0, "O");
+        Model modelWithMyRandom = new Model(new MyRandom(0));
+
+        modelWithMyRandom.startGameComputer();          // sets computer (player2) symbol "O" to square 0.
+        modelWithMyRandom.playGame(SquareIndex.ZERO);
+
+        assertEquals(expectedSquares, modelWithMyRandom.getSquares());
+    }
+
+    @Test
+    @DisplayName("GAME_COMPUTER: Call to makeComputerMove() with full board leaves game unchanged.")
+    void callToMakeComputerMoveWithFullBoardLeavesGameUnchanged(){
+        ObservableList<String> fullBoard = model.getSquares();
+        fullBoard.setAll("X");
+
         model.makeComputerMove();
 
+        assertTrue(model.getSquares().stream().allMatch(symbol -> symbol.equals("X")));
+    }
+
+    // TEST CODE FOR WIN AND DRAW
+
+    @Test
+    @DisplayName("GAME_COMPUTER: Gameplay with winning row for computer sets GameState to GAME_OVER and GameMessage to computer win.")
+    void gamePlayWithComputerRowWinSetsGameStateGameOverAndGameMessageToComputerWin(){
+        MyRandom myRandom = new MyRandom(0);
+        Model modelWithMyRandom = new Model(myRandom);
+
+        // sets computer symbol to square 0.
+        modelWithMyRandom.startGameComputer();
+        // sets user symbol to square 3 and computer symbol to square 1.
+        myRandom.setNextInt(1);
+        modelWithMyRandom.playGame(SquareIndex.THREE);
+        // sets user symbol to square 4 and computer symbol to square 2,
+        // which is a winning row move for computer.
+        myRandom.setNextInt(2);
+        modelWithMyRandom.playGame(SquareIndex.FOUR);
+
         assertAll(
-                () -> assertTrue(model.isBoardFull()),
-                () -> assertEquals(model.getPlayer1().getSymbol(), model.getSquares().getFirst())
+                () -> assertEquals(GameState.GAME_OVER, modelWithMyRandom.getCurrentGameState()),
+                () -> assertEquals(modelWithMyRandom.getPlayer2().getName() + " wins!", modelWithMyRandom.getGameMessage())
         );
     }
 
     @Test
-    @DisplayName("GAME_COMPUTER - Call to playGame with winning square for computer sets GameState to GAME_OVER.")
-    void callToPlayGameWithWinningSquareWhenGameStateIsGameComputerChangesGameStateToGameOver(){
-        Random random = new MyRandom();
-        Model modelWithRandom = new Model(random);
+    @DisplayName("GAME_COMPUTER: Gameplay with winning column for computer sets GameState to GAME_OVER and GameMessage to computer win.")
+    void gamePlayWithComputerColWinSetsGameStateGameOverAndGameMessageToComputerWin(){
+        MyRandom myRandom = new MyRandom(0);
+        Model modelWithMyRandom = new Model(myRandom);
 
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, model.getPlayer2().getSymbol());
-        squares.set(4, model.getPlayer2().getSymbol());
-        squares.set(8, model.getPlayer2().getSymbol());
-        squares.set(3, model.getPlayer1().getSymbol());
-
-        ObservableList<String> squaresInGame = modelWithRandom.getSquares();
-        squaresInGame.set(4, modelWithRandom.getPlayer2().getSymbol());
-        squaresInGame.set(8, modelWithRandom.getPlayer2().getSymbol());
-        modelWithRandom.setSquares(squaresInGame);
-
-        modelWithRandom.setCurrentGameState(GameState.GAME_COMPUTER);
-        // sets player1 symbol to index 3 and player2 (computer) symbol to index 0 (via override nextInt).
-        modelWithRandom.playGame(SquareIndex.THREE);
+        // sets computer symbol to square 0.
+        modelWithMyRandom.startGameComputer();
+        // sets user symbol to square 2 and computer symbol to square 3.
+        myRandom.setNextInt(3);
+        modelWithMyRandom.playGame(SquareIndex.TWO);
+        // sets user symbol to square 5 and computer symbol to square 6,
+        // which is a winning row move for computer.
+        myRandom.setNextInt(6);
+        modelWithMyRandom.playGame(SquareIndex.FIVE);
 
         assertAll(
-                () -> assertEquals(GameState.GAME_OVER, modelWithRandom.getCurrentGameState()),
-                () -> assertEquals(squares, squaresInGame)
+                () -> assertEquals(GameState.GAME_OVER, modelWithMyRandom.getCurrentGameState()),
+                () -> assertEquals(modelWithMyRandom.getPlayer2().getName() + " wins!", modelWithMyRandom.getGameMessage())
         );
     }
 
     @Test
-    @DisplayName("GAME_FRIEND - Call to playGame with winning square for player sets GameState to GAME_OVER.")
-    void callToPlayGameWithWinningSquareWhenGameStateIsGameFriendChangesGameStateToGameOver(){
+    @DisplayName("GAME_COMPUTER: Gameplay with winning diagonal for computer sets GameState to GAME_OVER and GameMessage to computer win.")
+    void gamePlayWithComputerDiagonalWinSetsGameStateGameOverAndGameMessageToComputerWin(){
+        MyRandom myRandom = new MyRandom(0);
+        Model modelWithMyRandom = new Model(myRandom);
+
+        // sets computer symbol to square 0.
+        modelWithMyRandom.startGameComputer();
+        // sets user symbol to square 2 and computer symbol to square 4.
+        myRandom.setNextInt(4);
+        modelWithMyRandom.playGame(SquareIndex.TWO);
+        // sets user symbol to square 5 and computer symbol to square 8,
+        // which is a winning row move for computer.
+        myRandom.setNextInt(8);
+        modelWithMyRandom.playGame(SquareIndex.FIVE);
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_OVER, modelWithMyRandom.getCurrentGameState()),
+                () -> assertEquals(modelWithMyRandom.getPlayer2().getName() + " wins!", modelWithMyRandom.getGameMessage())
+        );
+    }
+
+    @Test
+    @DisplayName("GAME_COMPUTER: Gameplay with computer draw sets GameState to GAME_OVER and GameMessage to draw.")
+    void gamePlayWithComputerDrawSetsGameStateGameOverAndGameMessageToDraw(){
+        /*
+                O   O   X
+                X   X   O
+                O   O   X
+         */
+        MyRandom myRandom = new MyRandom(0);
+        Model modelWithMyRandom = new Model(myRandom);
+
+        // sets computer symbol to square 0.
+        modelWithMyRandom.startGameComputer();
+        // sets user symbol to square 2 and computer symbol to square 1.
+        myRandom.setNextInt(1);
+        modelWithMyRandom.playGame(SquareIndex.TWO);
+        // sets user symbol to square 3 and computer symbol to square 5.
+        myRandom.setNextInt(5);
+        modelWithMyRandom.playGame(SquareIndex.THREE);
+        // sets user symbol to square 4 and computer symbol to square 6.
+        myRandom.setNextInt(6);
+        modelWithMyRandom.playGame(SquareIndex.FOUR);
+        // sets user symbol to square 8 and computer symbol to square 7, which should equal full board and a draw.
+        myRandom.setNextInt(7);
+        modelWithMyRandom.playGame(SquareIndex.EIGHT);
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_OVER, modelWithMyRandom.getCurrentGameState()),
+                () -> assertEquals("DRAW!", modelWithMyRandom.getGameMessage())
+        );
+    }
+
+    @Test
+    @DisplayName("GAME_FRIEND: Gameplay with winning row sets GameState to GAME_OVER and GameMessage to currentPlayer win.")
+    void gamePlayWithFriendRowWinSetsGameStateGameOverAndGameMessageToCurrentPlayerWin(){
 
         model.startGameFriend();
-
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, model.getCurrentPlayer().getSymbol());
-        squares.set(1, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-        model.playGame(SquareIndex.TWO);
-
-        assertEquals(GameState.GAME_OVER, model.getCurrentGameState());
-    }
-
-    @Test
-    @DisplayName("GAME_COMPUTER - Call to playGame with no winning square for computer keeps GameState GAME_COMPUTER.")
-    void callToPlayGameWithNoWinningSquareWhenGameStateIsGameComputerDoesNotChangeGameState(){
-        Random random = new MyRandom();
-        Model modelWithRandom = new Model(random);
-
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, model.getPlayer2().getSymbol());
-        squares.set(2, model.getPlayer2().getSymbol());
-        squares.set(8, model.getPlayer2().getSymbol());
-        squares.set(4, model.getPlayer1().getSymbol());
-
-        ObservableList<String> squaresInGame = modelWithRandom.getSquares();
-        squaresInGame.set(2, modelWithRandom.getPlayer2().getSymbol());
-        squaresInGame.set(8, modelWithRandom.getPlayer2().getSymbol());
-        modelWithRandom.setSquares(squaresInGame);
-
-        modelWithRandom.setCurrentGameState(GameState.GAME_COMPUTER);
-        // sets player1 symbol to index 3 and player2 (computer) symbol to index 0 (via override nextInt).
-        modelWithRandom.playGame(SquareIndex.FOUR);
+        model.playGame(SquareIndex.THREE);
+        model.playGame(SquareIndex.SIX);
+        model.playGame(SquareIndex.FOUR);
+        model.playGame(SquareIndex.SEVEN);
+        model.playGame(SquareIndex.FIVE);
 
         assertAll(
-                () -> assertEquals(GameState.GAME_COMPUTER, modelWithRandom.getCurrentGameState()),
-                () -> assertEquals(squares, squaresInGame)
+                () -> assertEquals(GameState.GAME_OVER, model.getCurrentGameState()),
+                () -> assertEquals(model.getCurrentPlayer().getName() + " wins!", model.getGameMessage())
         );
     }
 
     @Test
-    void callToPlayGameWhenGameStateIsGameOverDoesNotChangeSquareList(){
+    @DisplayName("GAME_FRIEND: Gameplay with winning column sets GameState to GAME_OVER and GameMessage to currentPlayer win.")
+    void gamePlayWithFriendColWinSetsGameStateGameOverAndGameMessageToCurrentPlayerWin(){
+
+        model.startGameFriend();
+        model.playGame(SquareIndex.TWO);
         model.playGame(SquareIndex.ZERO);
-        assertEquals("", model.getSquares().getFirst());
+        model.playGame(SquareIndex.FIVE);
+        model.playGame(SquareIndex.ONE);
+        model.playGame(SquareIndex.EIGHT);
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_OVER, model.getCurrentGameState()),
+                () -> assertEquals(model.getCurrentPlayer().getName() + " wins!", model.getGameMessage())
+        );
     }
 
     @Test
-    void callToPlayGameWithOccupiedSquareWhenGameStateIsGameFriendDoesNotChangeList(){
+    @DisplayName("GAME_FRIEND: Gameplay with winning diagonal sets GameState to GAME_OVER and GameMessage to currentPlayer win.")
+    void gamePlayWithFriendDiagonalWinSetsGameStateGameOverAndGameMessageToCurrentPlayerWin(){
 
-        // start player = player 2.
         model.startGameFriend();
-        ObservableList<String> squares = model.getSquares();
-        squares.set(2, model.getPlayer1().getSymbol());
         model.playGame(SquareIndex.TWO);
-        // checks so that playGame has not changed index 2 to player2 symbol.
-        assertEquals(model.getSquares().get(2), model.getPlayer1().getSymbol());
+        model.playGame(SquareIndex.ZERO);
+        model.playGame(SquareIndex.FOUR);
+        model.playGame(SquareIndex.ONE);
+        model.playGame(SquareIndex.SIX);
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_OVER, model.getCurrentGameState()),
+                () -> assertEquals(model.getCurrentPlayer().getName() + " wins!", model.getGameMessage())
+        );
     }
 
     @Test
-    void callToCheckForWinnerReturnsTrueForFirstRowWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, model.getCurrentPlayer().getSymbol());
-        squares.set(1, model.getCurrentPlayer().getSymbol());
-        squares.set(2, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
+    @DisplayName("GAME_FRIEND: Gameplay with draw sets GameState to GAME_OVER and GameMessage to draw.")
+    void gamePlayWithFriendDrawSetsGameStateGameOverAndGameMessageToDraw(){
+        /*
+                X   X   O
+                O   O   X
+                X   O   O
+         */
 
-        assertTrue(model.checkForWinner());
+        model.startGameFriend();
+        model.playGame(SquareIndex.TWO);
+        model.playGame(SquareIndex.ZERO);
+        model.playGame(SquareIndex.THREE);
+        model.playGame(SquareIndex.ONE);
+        model.playGame(SquareIndex.FOUR);
+        model.playGame(SquareIndex.FIVE);
+        model.playGame(SquareIndex.SEVEN);
+        model.playGame(SquareIndex.SIX);
+        model.playGame(SquareIndex.EIGHT);
+
+        assertAll(
+                () -> assertEquals(GameState.GAME_OVER, model.getCurrentGameState()),
+                () -> assertEquals("DRAW!", model.getGameMessage())
+        );
     }
 
     @Test
-    void callToCheckForWinnerReturnsTrueForSecondRowWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(3, model.getCurrentPlayer().getSymbol());
-        squares.set(4, model.getCurrentPlayer().getSymbol());
-        squares.set(5, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
+    @DisplayName("GAME_FRIEND: Two games played with two wins in a row for player2 sets gamesPlayed to 2 and player2 score to 2.")
+    void twoGamesWithPlayer2WinsSetsGamesPlayedToTwoAndPlayer2ScoreToTwo(){
 
-        assertTrue(model.checkForWinner());
-    }
+        /*
+                player 2 starts
+                X   O   X
+                -   O   -
+                -   O   -
+         */
+        model.startGameFriend();
+        model.playGame(SquareIndex.ONE);
+        model.playGame(SquareIndex.ZERO);
+        model.playGame(SquareIndex.FOUR);
+        model.playGame(SquareIndex.TWO);
+        model.playGame(SquareIndex.SEVEN);
 
-    @Test
-    void callToCheckForWinnerReturnsTrueForThirdRowWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(6, model.getCurrentPlayer().getSymbol());
-        squares.set(7, model.getCurrentPlayer().getSymbol());
-        squares.set(8, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
+        /*
+                player 1 starts
+                X   X   O
+                -   -   O
+                X   -   O
+         */
+        model.startGameFriend();
+        model.playGame(SquareIndex.ZERO);
+        model.playGame(SquareIndex.TWO);
+        model.playGame(SquareIndex.ONE);
+        model.playGame(SquareIndex.FIVE);
+        model.playGame(SquareIndex.SIX);
+        model.playGame(SquareIndex.EIGHT);
 
-        assertTrue(model.checkForWinner());
-    }
-
-    @Test
-    void callToCheckForWinnerReturnsTrueForUserFirstColWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, model.getCurrentPlayer().getSymbol());
-        squares.set(3, model.getCurrentPlayer().getSymbol());
-        squares.set(6, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-
-        assertTrue(model.checkForWinner());
-    }
-
-    @Test
-    void callToCheckForWinnerReturnsTrueForUserSecondColWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(1, model.getCurrentPlayer().getSymbol());
-        squares.set(4, model.getCurrentPlayer().getSymbol());
-        squares.set(7, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-
-        assertTrue(model.checkForWinner());
-    }
-
-    @Test
-    void callToCheckForWinnerReturnsTrueForUserThirdColWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(2, model.getCurrentPlayer().getSymbol());
-        squares.set(5, model.getCurrentPlayer().getSymbol());
-        squares.set(8, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-
-        assertTrue(model.checkForWinner());
-    }
-
-    @Test
-    void callToCheckForWinnerReturnsTrueForUserLeftToRightDiagonalWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, model.getCurrentPlayer().getSymbol());
-        squares.set(4, model.getCurrentPlayer().getSymbol());
-        squares.set(8, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-
-        assertTrue(model.checkForWinner());
-    }
-
-    @Test
-    void callToCheckForWinnerReturnsTrueForUserRightToLeftDiagonalWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(2, model.getCurrentPlayer().getSymbol());
-        squares.set(4, model.getCurrentPlayer().getSymbol());
-        squares.set(6, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-
-        assertTrue(model.checkForWinner());
-    }
-
-    @Test
-    void callToCheckForWinnerReturnsFalseForUserNoRowWin(){
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, model.getCurrentPlayer().getSymbol());
-        squares.set(1, model.getCurrentPlayer().getSymbol());
-        squares.set(3, model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-
-        assertFalse(model.checkForWinner());
-    }
-
-    @Test
-    void callToCheckForDrawReturnsTrueForFullNotEmptyBoard(){
-        ObservableList<String> squares = model.getSquares();
-        squares.setAll(model.getCurrentPlayer().getSymbol());
-        model.setSquares(squares);
-
-        assertTrue(model.checkForDraw());
-    }
-
-    @Test
-    void callToCheckForDrawReturnsFalseForFullEmptyBoard(){
-        assertFalse(model.checkForDraw());
-    }
-
-    @Test
-    void callToCheckForWinnerOrDrawWhenDrawSetsGameMessageToDraw(){
-        String x = model.getPlayer1().getSymbol();
-        String o = model.getPlayer2().getSymbol();
-
-        ObservableList<String> squares = model.getSquares();
-        squares.set(0, x);
-        squares.set(1, x);
-        squares.set(2, o);
-        squares.set(3, o);
-        squares.set(4, o);
-        squares.set(5, x);
-        squares.set(6, x);
-        squares.set(7, x);
-        squares.set(8, o);
-        model.setSquares(squares);
-
-        model.checkForWinnerOrDraw();
-
-        assertEquals(model.getGameMessage(), "DRAW!");
+        assertAll(
+                () -> assertEquals(2, model.getGamesPlayed()),
+                () -> assertEquals(2, model.getPlayer2().getScore())
+        );
     }
 }

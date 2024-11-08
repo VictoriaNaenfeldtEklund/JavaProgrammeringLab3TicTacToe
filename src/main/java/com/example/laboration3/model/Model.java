@@ -26,6 +26,8 @@ public class Model {
 
     private ObservableList<String> squares = FXCollections.observableArrayList();
 
+    // CONSTRUCTORS
+
     /**
      * Constructor default.
      * Initializes a list of 9 TicTacToe squares.
@@ -43,6 +45,8 @@ public class Model {
         this.random = random;
         IntStream.range(0, 9).forEach(_ -> squares.add(""));
     }
+
+    // GAMEPLAY
 
     /**
      * Call to start game with friend.
@@ -97,6 +101,45 @@ public class Model {
             }
         }
     }
+
+    /**
+     * Sets computer (player2) symbol to random empty square if there is any empty square left,
+     * else does nothing.
+     */
+    public void makeComputerMove() {
+
+        SquareIndex randomSquareIndex;
+
+        // if-condition is implemented as extra safety but is not really needed for current controller setup as the playGame method
+        // never calls this method with a full board.
+        if(!isBoardFull()){
+            do {
+                randomSquareIndex = Arrays.stream(SquareIndex.values()).toList().get(random.nextInt(9));
+            } while(!setSquareSymbol(randomSquareIndex));
+        }
+    }
+
+    /**
+     * Sets currentPlayer:s symbol to clicked square (represented by passed squareIndex) if empty.
+     * @param squareIndex SquareIndex: represents clicked square:s index (0-8) in the square-list.
+     * @return true if symbol is set to empty square, else false.
+     */
+    public boolean setSquareSymbol(SquareIndex squareIndex){
+        if(squares.get(squareIndex.ordinal()).isEmpty()){
+            squares.set(squareIndex.ordinal(), currentPlayer.getSymbol());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Switches currentPlayer (player1/player2).
+     */
+    public void switchCurrentPlayer(){
+        currentPlayer = currentPlayer.equals(player1) ? player2 : player1;
+    }
+
+    // TESTS
 
     /**
      * Checks for winning player (row/column/diagonal) or draw.
@@ -195,28 +238,7 @@ public class Model {
         return squares.stream().noneMatch(String::isEmpty);
     }
 
-    /**
-     * Tests if board still has any empty space left by check for empty squares.
-     * @return true if board has any empty square left, else false.
-     */
-    public boolean isThereAnyEmptySquareOnBoard(){
-        return squares.stream().anyMatch(String::isEmpty);
-    }
-
-    /**
-     * Sets computer (player2) symbol to random empty square if there is any empty square left,
-     * else does nothing.
-     */
-    public void makeComputerMove() {
-
-        SquareIndex randomSquareIndex;
-
-        if(isThereAnyEmptySquareOnBoard()){
-            do {
-                randomSquareIndex = Arrays.stream(SquareIndex.values()).toList().get(random.nextInt(9));
-            } while(!setSquareSymbol(randomSquareIndex));
-        }
-    }
+    // RESETS GAME
 
     /**
      * Resets game.
@@ -251,27 +273,7 @@ public class Model {
         IntStream.range(0, 9).forEach(i -> squares.set(i, ""));
     }
 
-    /**
-     * Sets currentPlayer:s symbol to clicked square (represented by passed squareIndex) if empty.
-     * @param squareIndex SquareIndex: represents clicked square:s index (0-8) in the square-list.
-     * @return true if symbol is set to empty square, else false.
-     */
-    public boolean setSquareSymbol(SquareIndex squareIndex){
-        if(squares.get(squareIndex.ordinal()).isEmpty()){
-            squares.set(squareIndex.ordinal(), currentPlayer.getSymbol());
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Switches currentPlayer (player1/player2).
-     */
-    public void switchCurrentPlayer(){
-        currentPlayer = currentPlayer.equals(player1) ? player2 : player1;
-    }
-
-    // GETTTERS AND SETTERS
+    // GETTERS AND SETTERS
 
     public ObservableList<String> getSquares() {
         return squares;
